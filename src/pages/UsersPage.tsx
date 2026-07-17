@@ -18,6 +18,7 @@ export default function UsersPage() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    password: '',
     role: 'customer' as string,
     collegeId: '',
     canteenId: '',
@@ -31,14 +32,14 @@ export default function UsersPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [userRes, colRes, cantRes] = await Promise.all([
-        api.users.list() as Promise<User[]>,
-        api.colleges.list() as Promise<College[]>,
-        api.canteens.list() as Promise<Canteen[]>,
+      const [userRes, colRes, cantRes] = await Promise.allSettled([
+        api.users.list(),
+        api.colleges.list(),
+        api.canteens.list(),
       ]);
-      setUsers(userRes || []);
-      setColleges(colRes || []);
-      setCanteens(cantRes || []);
+      setUsers(userRes.status === 'fulfilled' ? (Array.isArray(userRes.value) ? userRes.value as User[] : []) : []);
+      setColleges(colRes.status === 'fulfilled' ? (Array.isArray(colRes.value) ? colRes.value as College[] : []) : []);
+      setCanteens(cantRes.status === 'fulfilled' ? (Array.isArray(cantRes.value) ? cantRes.value as Canteen[] : []) : []);
     } catch (err) {
       console.error('Fetch users error:', err);
     } finally {
@@ -61,6 +62,7 @@ export default function UsersPage() {
       const payload: Record<string, string> = {
         name: form.name,
         email: form.email,
+        password: form.password || 'changeme',
         role: form.role,
       };
       if (form.collegeId) payload.collegeId = form.collegeId;
@@ -70,7 +72,7 @@ export default function UsersPage() {
 
       await api.users.create(payload as Parameters<typeof api.users.create>[0]);
       setShowCreateModal(false);
-      setForm({ name: '', email: '', role: 'customer', collegeId: '', canteenId: '', subCanteenId: '', posting: '' });
+      setForm({ name: '', email: '', password: '', role: 'customer', collegeId: '', canteenId: '', subCanteenId: '', posting: '' });
       fetchData();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create user');
@@ -248,6 +250,16 @@ export default function UsersPage() {
                 placeholder="john@example.com"
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text-secondary mb-1.5">Password</label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+              placeholder="Leave blank for default password"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1.5">Role</label>

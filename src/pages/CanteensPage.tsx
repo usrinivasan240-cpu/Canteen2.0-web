@@ -23,12 +23,12 @@ export default function CanteensPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [cantRes, colRes] = await Promise.all([
-        api.canteens.list() as Promise<Canteen[]>,
-        api.colleges.list() as Promise<College[]>,
+      const [cantRes, colRes] = await Promise.allSettled([
+        api.canteens.list(),
+        api.colleges.list(),
       ]);
-      setCanteens(cantRes || []);
-      setColleges(colRes || []);
+      setCanteens(cantRes.status === 'fulfilled' ? (Array.isArray(cantRes.value) ? cantRes.value as Canteen[] : []) : []);
+      setColleges(colRes.status === 'fulfilled' ? (Array.isArray(colRes.value) ? colRes.value as College[] : []) : []);
     } catch (err) {
       console.error('Fetch canteens error:', err);
     } finally {
