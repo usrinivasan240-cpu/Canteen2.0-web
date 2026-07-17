@@ -5,6 +5,7 @@ import TopBar from './components/TopBar';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CollegesPage from './pages/CollegesPage';
+import CollegeDetailPage from './pages/CollegeDetailPage';
 import CanteensPage from './pages/CanteensPage';
 import UsersPage from './pages/UsersPage';
 import AnalyticsPage from './pages/AnalyticsPage';
@@ -56,6 +57,7 @@ export default function App() {
             <Route path="/canteens" element={<CanteensPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/analytics/:id" element={<CollegeDetailPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
