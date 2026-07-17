@@ -12,14 +12,17 @@ export default function CollegesPage() {
   const [form, setForm] = useState({ name: '', location: '', status: 'active' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [fetchError, setFetchError] = useState('');
 
   const fetchColleges = useCallback(async () => {
     setLoading(true);
+    setFetchError('');
     try {
       const data = await api.colleges.list();
-      setColleges((data || []) as College[]);
+      setColleges(Array.isArray(data) ? (data as College[]) : []);
     } catch (err) {
       console.error('Fetch colleges error:', err);
+      setFetchError(err instanceof Error ? err.message : 'Failed to load colleges');
     } finally {
       setLoading(false);
     }
@@ -113,6 +116,12 @@ export default function CollegesPage() {
           Add College
         </button>
       </div>
+
+      {fetchError && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-danger animate-fade-in">
+          {fetchError}
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
