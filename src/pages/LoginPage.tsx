@@ -19,7 +19,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     setLoading(true);
     try {
       const res = await api.auth.login(email, password, 'superadmin');
-      localStorage.setItem('superadmin_token', res.token);
+      localStorage.setItem('superadmin_token', ' logged-in');
       const user = res.user as { email: string; name?: string; role: string };
       onLogin({ email: user.email, name: user.name || user.email, role: user.role });
     } catch (err: unknown) {

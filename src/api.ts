@@ -37,7 +37,7 @@ function del<T>(path: string): Promise<T> {
 export const api = {
   auth: {
     login: (email: string, password: string, role: string) =>
-      post<{ token: string; user: unknown }>('/api/auth/login', { email, password, role }),
+      post<{ success: boolean; user: { id: string; name: string; email: string; role: string; collegeId?: string; canteenId?: string; subCanteenId?: string } }>('/api/auth/login', { email, password, role }),
   },
 
   colleges: {
